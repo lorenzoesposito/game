@@ -14,7 +14,7 @@ type Tri2ui struct {
 
 // Triangle 3D float64
 type Tri3f struct {
-	a, b, c Vec3f
+	A, B, C Vec3f
 }
 
 // Vector 3D float64

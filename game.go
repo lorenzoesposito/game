@@ -3,10 +3,9 @@ package main
 import (
 	"fmt"
 
-	. "game.com/lorenzo/game/model"
+	. "game.com/lorenzo/game/utils"
 )
 
 func main() {
-	fmt.Println("nice")
-	fmt.Println(NewModel("D:/school/informatik/go/game/models/test.obj").Materials)
+	fmt.Println(NewModel("test").Materials[0])
 }
