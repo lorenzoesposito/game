@@ -9,7 +9,9 @@ import (
 	"time"
 )
 
-const serververzeichnis string = "D:\\school\\informatik\\go\\game\\gfx2\\gfx2server\\"
+var dir, _ = os.Getwd()
+
+var serververzeichnis string = dir + "\\gfx2\\gfx2server\\"
 
 // const serververzeichnis string = "/home/lewein/go/bin/"
 
