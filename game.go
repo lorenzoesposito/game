@@ -31,7 +31,7 @@ func handleMessage(conn string, pos Vec3f) {
 		player.Transform = player.SetPosition(pos)
 	} else {
 		if FindEntity(conn) == -1 {
-			InstantiateEntity(Entity{conn, IdentityMatrix(), Color("test"), Mesh("test")})
+			InstantiateEntity(Entity{conn, IdentityMatrix(), Color("car"), Mesh("car")})
 			GetEntities()[FindEntity(conn)].Transform = GetEntities()[FindEntity(conn)].SetPosition(pos)
 		} else {
 			GetEntities()[FindEntity(conn)].Transform = GetEntities()[FindEntity(conn)].SetPosition(pos)
@@ -48,10 +48,10 @@ func read() {
 func GameLoop() {
 	QuitGame = false
 	client.InitializeClient("192.168.178.48:8080")
-	player = Entity{client.Id, IdentityMatrix(), Color("test"), Mesh("test")}
+	player = Entity{client.Id, IdentityMatrix(), Color("car"), Mesh("car")}
 
 	// Scene setup
-	//InstantiateEntity(Entity{1111, IdentityMatrix(), Color("test"), Mesh("test")})
+	//InstantiateEntity(Entity{1111, IdentityMatrix(), Color("car"), Mesh("car")})
 	//entityList[0].transform = Translate(entityList[0].transform, Vec3f{0,0,20})
 
 	// Clock zero
