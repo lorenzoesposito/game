@@ -1,1 +1,3 @@
-# 3d game written in go
+# 3d multiplayer game written in go
+
+work in progress
