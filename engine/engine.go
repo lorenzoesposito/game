@@ -8,7 +8,7 @@ import (
 )
 
 type Entity struct {
-	Index     int // Index in the entity list
+	Id        string // Index in the entity list
 	Transform [4][4]float64
 	Colors    []Vec3f // Color of this entity
 	Mesh      []Tri3f // Triangles of this entity
@@ -128,6 +128,13 @@ func SettingsMenu() {
 	}
 }
 
+func (mat *Entity) SetPosition(vec Vec3f) [4][4]float64 {
+	mat.Transform[3][0] = vec.X
+	mat.Transform[3][1] = vec.Y
+	mat.Transform[3][2] = vec.Z
+	return mat.Transform
+}
+
 func GetEntities() []Entity {
 	return entityList
 }
@@ -151,16 +158,21 @@ func ResizeWindow(sizeX, sizeY uint16) {
 	Fenster(sizeX, sizeY)
 }
 
-func DestroyEntity(i int) {
-	entityList[i] = entityList[len(entityList)-1]
-	entityList = entityList[:len(entityList)-1]
-	for i = i; i < len(entityList); i++ {
-		entityList[i].Index = i
+func FindEntity(element string) int {
+	for i := range entityList {
+		if entityList[i].Id == element {
+			return i
+		}
 	}
+	return -1
+}
+
+func DestroyEntity(con string) {
+	entityList[FindEntity(con)] = entityList[len(entityList)-1]
+	entityList = entityList[:len(entityList)-1]
 }
 
 func InstantiateEntity(e Entity) {
-	e.Index = len(entityList)
 	entityList = append(entityList, e)
 }
 

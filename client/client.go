@@ -8,7 +8,7 @@ import (
 
 type Client struct {
 	Id   string
-	Conn net.Conn
+	Conn *net.UDPConn
 }
 
 func (c *Client) InitializeClient(server string) {
@@ -18,7 +18,13 @@ func (c *Client) InitializeClient(server string) {
 	LogFatal(err)
 	c.Id = connection.LocalAddr().String()
 	c.Conn = connection
-	defer connection.Close()
 
 	connection.Write([]byte("joined_"))
+}
+
+func (c *Client) Read() string {
+	buffer := make([]byte, 1024*8)
+	n, _, err := c.Conn.ReadFromUDP(buffer)
+	LogFatal(err)
+	return string(buffer[:n])
 }

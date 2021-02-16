@@ -148,13 +148,6 @@ func Translate(mat [4][4]float64, vec Vec3f) [4][4]float64 {
 	return mat
 }
 
-func SetPosition(mat [4][4]float64, vec Vec3f) [4][4]float64 {
-	mat[3][0] = vec.X
-	mat[3][1] = vec.Y
-	mat[3][2] = vec.Z
-	return mat
-}
-
 func Rotate(mat [4][4]float64, vec Vec3f) [4][4]float64 {
 	if vec.X != 0 {
 		mat[1][1] = math.Cos(vec.X)

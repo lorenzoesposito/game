@@ -51,10 +51,15 @@ func BytesToBools(b []byte) []bool {
 	return t
 }
 
-func Parse(msg string) Msg {
+func ParseServer(msg string) Msg {
 	split := strings.Split(msg, "_")
 	msgType := split[0]
 	return Msg{msgType, BytesToBools([]byte(split[1]))}
+}
+
+func ParseClient(msg string) (string, Vec3f) {
+	split := strings.Split(msg, "_")
+	return split[0], Vec3f{StringToFloat(split[1]), StringToFloat(split[2]), StringToFloat(split[3])}
 }
 
 func LogFatal(err error) {

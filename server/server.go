@@ -29,15 +29,15 @@ func handleMessage(listener *net.UDPConn) {
 	}
 	message := string(buffer[:n])
 
-	switch Parse(message).MsgType {
+	switch ParseServer(message).MsgType {
 	case "joined":
 		players[conn.String()] = player{conn, start}
 		fmt.Println(conn.String())
 	case "update":
 		p := players[conn.String()].position
-		players[conn.String()] = player{conn, Vec3f{p.X + GetAxis(Parse(message).Input[0], Parse(message).Input[1]),
-			p.Y + GetAxis(Parse(message).Input[2], Parse(message).Input[3]),
-			p.Z + GetAxis(Parse(message).Input[4], Parse(message).Input[5])}}
+		players[conn.String()] = player{conn, Vec3f{p.X + GetAxis(ParseServer(message).Input[0], ParseServer(message).Input[1]),
+			p.Y + GetAxis(ParseServer(message).Input[2], ParseServer(message).Input[3]),
+			p.Z + GetAxis(ParseServer(message).Input[4], ParseServer(message).Input[5])}}
 	case "quit":
 		delete(players, conn.String())
 	}
@@ -50,7 +50,7 @@ func handleMessage(listener *net.UDPConn) {
 }
 
 func main() {
-	s, err := net.ResolveUDPAddr("udp", "localhost:8080")
+	s, err := net.ResolveUDPAddr("udp", "192.168.178.48:8080")
 	LogFatal(err)
 	listener, err := net.ListenUDP("udp", s)
 	LogFatal(err)

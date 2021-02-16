@@ -3,13 +3,15 @@ package main
 import (
 	"fmt"
 	. "gfx2"
-	"math"
-	"net"
 	"time"
 
+	. "game.com/lorenzo/game/client"
 	. "game.com/lorenzo/game/engine"
 	. "game.com/lorenzo/game/utils"
 )
+
+var client Client
+var player Entity
 
 func main() {
 	for !QuitProgram {
@@ -24,17 +26,32 @@ type State func()
 
 var states []State = []State{MainMenu, GameLoop, SettingsMenu}
 
+func handleMessage(conn string, pos Vec3f) {
+	if conn == client.Id {
+		player.Transform = player.SetPosition(pos)
+	} else {
+		if FindEntity(conn) == -1 {
+			InstantiateEntity(Entity{conn, IdentityMatrix(), Color("test"), Mesh("test")})
+			GetEntities()[FindEntity(conn)].Transform = GetEntities()[FindEntity(conn)].SetPosition(pos)
+		} else {
+			GetEntities()[FindEntity(conn)].Transform = GetEntities()[FindEntity(conn)].SetPosition(pos)
+		}
+	}
+}
+
+func read() {
+	for {
+		handleMessage(ParseClient(client.Read()))
+	}
+}
+
 func GameLoop() {
 	QuitGame = false
-	addr, err := net.ResolveUDPAddr("udp", "localhost:8080")
-	LogFatal(err)
-	connection, err := net.DialUDP("udp", nil, addr)
-	LogFatal(err)
-	defer connection.Close()
-	connection.Write([]byte("joined_"))
+	client.InitializeClient("192.168.178.48:8080")
+	player = Entity{client.Id, IdentityMatrix(), Color("test"), Mesh("test")}
 
 	// Scene setup
-	InstantiateEntity(Entity{0, IdentityMatrix(), Color("test"), Mesh("test")})
+	//InstantiateEntity(Entity{1111, IdentityMatrix(), Color("test"), Mesh("test")})
 	//entityList[0].transform = Translate(entityList[0].transform, Vec3f{0,0,20})
 
 	// Clock zero
@@ -45,11 +62,13 @@ func GameLoop() {
 	deltaTime := float64(0)
 
 	go KeyboardInput()
+	go read()
 
 	//Camera Rotation values
 
 	// Game loop
 	for !QuitGame {
+		client.Conn.Write(append([]byte("update_"), BoolsToBytes([]bool{Left, Right, Shift, Space, Down, Up})...))
 		// Calculate deltaTime
 		deltaTime = float64(time.Now().Sub(t1).Nanoseconds()) / 10000000
 		if DoDebugging {
@@ -57,13 +76,9 @@ func GameLoop() {
 		}
 		t1 = time.Now()
 
-		// Move Player
 		if DoDebugging {
 			fmt.Println(MousePos)
 		}
-		playerInput := Vec3f{GetAxis(Left, Right), GetAxis(Shift, Space), GetAxis(Down, Up)}
-		MainCamera = Translate(MainCamera, Times(playerInput, ValVec(1*deltaTime)))
-		GetEntities()[0].Transform = SetPosition(GetEntities()[0].Transform, Vec3f{0, math.Sin(time.Now().Sub(t0).Seconds())*5 - 10, 10})
 
 		// Draw
 		UpdateAus()
@@ -90,6 +105,24 @@ func GameLoop() {
 				// Convert to uint16
 				DrawTriangle(triRaster)
 			}
+		}
+		for k := 0; k < len(player.Mesh); k++ {
+			Stiftfarbe(VecToColor(player.Colors[k]))
+			// Local to world
+			tri := Tri3fTransform(player.Mesh[k], player.Transform)
+			// World to Camera
+			tri = Tri3fTransform(tri, Inverse(MainCamera))
+			// Camera to canvas
+			tri = Tri3f{CameraToCanvas(tri.A), CameraToCanvas(tri.B), CameraToCanvas(tri.C)}
+			if CullCamera(tri.A) && CullCamera(tri.B) && CullCamera(tri.C) {
+				continue
+			}
+			// Canvas to NDC
+			tri2 := Tri2f{CanvasToNdc(tri.A), CanvasToNdc(tri.B), CanvasToNdc(tri.C)}
+			// NDC to Raster
+			triRaster := Tri2ui{NdcToRaster(tri2.A), NdcToRaster(tri2.B), NdcToRaster(tri2.C)}
+			// Convert to uint16
+			DrawTriangle(triRaster)
 		}
 		UpdateAn()
 	}
