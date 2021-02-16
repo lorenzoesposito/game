@@ -1,102 +1,59 @@
-package server
+package main
 
 import (
 	"fmt"
-	"log"
 	"net"
-	"strconv"
-	"strings"
 
 	. "game.com/lorenzo/game/utils"
 )
+
+var start = Vec3f{0, 0, 20}
+var players = make(map[string]player)
 
 type player struct {
 	conn     *net.UDPAddr
 	position Vec3f
 }
 
-func logFatal(err error) {
-	if err != nil {
-		log.Fatal(err)
-	}
+func playerToBytes(pl player) []byte {
+	return []byte(fmt.Sprintf("%s_%f_%f_%f_%f_%f_%f", pl.conn, pl.position.X, pl.position.Y, pl.position.Z))
 }
 
 func handleMessage(listener *net.UDPConn) {
 	buffer := make([]byte, 1024*8)
 	n, conn, err := listener.ReadFromUDP(buffer)
 
-	logFatal(err)
+	LogFatal(err)
 	if err != nil {
 		return
 	}
 	message := string(buffer[:n])
-	msgType, color, _ := parse(message)
-	_, _, pl := parse(message)
 
-	if msgType == "joined" {
+	switch Parse(message).MsgType {
+	case "joined":
+		players[conn.String()] = player{conn, start}
+		fmt.Println(conn.String())
+	case "update":
+		p := players[conn.String()].position
+		players[conn.String()] = player{conn, Vec3f{p.X + GetAxis(Parse(message).Input[0], Parse(message).Input[1]),
+			p.Y + GetAxis(Parse(message).Input[2], Parse(message).Input[3]),
+			p.Z + GetAxis(Parse(message).Input[4], Parse(message).Input[5])}}
+	case "quit":
+		delete(players, conn.String())
+	}
 
-		players[conn.String()] = player{conn, color,
-			pl[0],
-			pl[1], pl[2], pl[3]}
-		fmt.Println(conn.String(), "just joined")
-
-	} else {
-		players[conn.String()] = player{conn, color,
-			pl[0],
-			pl[1], pl[2], pl[3]}
-		for _, user := range players {
-			for _, pl := range players {
-				str := strings.Split(pl.conn.String(), ":")
-				str2 := strings.Split(user.conn.String(), ":")
-				if str[1] != str2[1] {
-					listener.WriteToUDP([]byte(packet(user)), pl.conn)
-					fmt.Println("update package sent to ", msgType[:1], ":", pl.conn)
-					fmt.Println("package:", packet(user))
-				}
-			}
+	for _, player := range players {
+		for _, pl := range players {
+			listener.WriteToUDP(playerToBytes(pl), player.conn)
 		}
 	}
-
 }
-
-func packet(player player) string {
-	return string(fmt.Sprintf("%s_%s_%s_%s_%s_%s",
-		player.conn.String(),
-		player.color,
-		strconv.Itoa(player.x),
-		strconv.Itoa(player.y),
-		strconv.Itoa(player.width),
-		strconv.Itoa(player.height)))
-}
-
-func parse(user string) (string, string, []int) {
-	split := strings.Split(user, "_")
-	//ID := split[0]
-	T := split[0]
-	C := split[1]
-	X, _ := strconv.Atoi(split[2])
-	Y, _ := strconv.Atoi(split[3])
-	W, _ := strconv.Atoi(split[4])
-	H, _ := strconv.Atoi(split[5])
-	return T, C, []int{X, Y, W, H}
-}
-
-var (
-	players         = make(map[string]player)
-	openConnections = make(map[string]*net.UDPAddr)
-	newConnection   = make(chan *net.UDPAddr)
-	deadConnection  = make(chan *net.UDPAddr)
-)
 
 func main() {
-	for key := range players {
-		delete(players, key)
-	}
-
 	s, err := net.ResolveUDPAddr("udp", "localhost:8080")
-	logFatal(err)
+	LogFatal(err)
 	listener, err := net.ListenUDP("udp", s)
-	logFatal(err)
+	LogFatal(err)
 	defer listener.Close()
 	for {
 		handleMessage(listener)

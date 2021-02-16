@@ -4,12 +4,12 @@ import "math"
 
 // Triangle 2D float64
 type Tri2f struct {
-	a, b, c Vec2f
+	A, B, C Vec2f
 }
 
 // Triangle 2D uint16
 type Tri2ui struct {
-	a, b, c Vec2ui
+	A, B, C Vec2ui
 }
 
 // Triangle 3D float64
@@ -24,32 +24,32 @@ type Vec3f struct {
 
 // Vector 2D float64
 type Vec2f struct {
-	x, y float64
+	X, Y float64
 }
 
 // Vector 2D uint16
 type Vec2ui struct {
-	x, y uint16
+	X, Y uint16
 }
 
 func ValVec(n float64) Vec3f {
 	return Vec3f{n, n, n}
 }
 
-func Plus(a, b Vec3f) Vec3f {
-	return Vec3f{a.X + b.X, a.Y + b.Y, a.Z + b.Z}
+func Plus(A, B Vec3f) Vec3f {
+	return Vec3f{A.X + B.X, A.Y + B.Y, A.Z + B.Z}
 }
 
-func Minus(a, b Vec3f) Vec3f {
-	return Vec3f{a.X - b.X, a.Y - b.Y, a.Z - b.Z}
+func Minus(A, B Vec3f) Vec3f {
+	return Vec3f{A.X - B.X, A.Y - B.Y, A.Z - B.Z}
 }
 
-func Times(a, b Vec3f) Vec3f {
-	return Vec3f{a.X * b.X, a.Y * b.Y, a.Z * b.Z}
+func Times(A, B Vec3f) Vec3f {
+	return Vec3f{A.X * B.X, A.Y * B.Y, A.Z * B.Z}
 }
 
-func Div(a, b Vec3f) Vec3f {
-	return Vec3f{a.X / b.X, a.Y / b.Y, a.Z / b.Z}
+func Div(A, B Vec3f) Vec3f {
+	return Vec3f{A.X / B.X, A.Y / B.Y, A.Z / B.Z}
 }
 
 func Len(vec Vec3f) float64 {
@@ -62,6 +62,13 @@ func Dist(vec1, vec2 Vec3f) (dist float64) {
 
 func Normalize(vec Vec3f) (q Vec3f) {
 	return Div(vec, ValVec(Len(vec)))
+}
+
+func Tri3fTransform(t Tri3f, mat [4][4]float64) Tri3f {
+	t.A = MultPointMatrix(t.A, mat)
+	t.B = MultPointMatrix(t.B, mat)
+	t.C = MultPointMatrix(t.C, mat)
+	return t
 }
 
 func MathAbs(n float64) float64 {
@@ -113,7 +120,7 @@ func Clamp(vec Vec3f, min, max float64) Vec3f {
 	return Vec3f{MathClamp(vec.X, min, max), MathClamp(vec.Y, min, max), MathClamp(vec.Z, min, max)}
 }
 
-func VecToColor(vec Vec3f) (r, g, b uint8) {
+func VecToColor(vec Vec3f) (r, g, B uint8) {
 	vec = Times(vec, ValVec(255))
 	return uint8(vec.X), uint8(vec.Y), uint8(vec.Z)
 }

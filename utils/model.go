@@ -14,7 +14,8 @@ type Model struct {
 	Materials                            []Vec3f
 }
 
-func Mesh(m Model) []Tri3f {
+func Mesh(file string) []Tri3f {
+	var m = NewModel(file)
 	var mesh []Tri3f
 	for i := 0; i < len(m.VecIndices); i += 3 {
 		//fmt.Println(int(m.VecIndices[i]), int(m.VecIndices[i+1]), int(m.VecIndices[i+2]))
@@ -26,6 +27,11 @@ func Mesh(m Model) []Tri3f {
 		mesh = append(mesh, face)
 	}
 	return mesh
+}
+
+func Color(file string) []Vec3f {
+	var m = NewModel(file)
+	return m.Materials
 }
 
 func readMTL(file, material string) Vec3f {
@@ -79,20 +85,21 @@ func NewModel(file string) Model {
 			model.Vecs = append(model.Vecs, vec)
 
 		case "f":
-			norm := make([]float32, 3)
-			vec := make([]float32, 3)
-			uv := make([]float32, 3)
+			/*
+				norm := make([]float32, 3)
+				vec := make([]float32, 3)
+				uv := make([]float32, 3)
 
-			// Get the digits from the file.
-			matches, _ := fmt.Fscanf(objFile, "%f/%f/%f %f/%f/%f %f/%f/%f\n", &vec[0], &uv[0], &norm[0], &vec[1], &uv[1], &norm[1], &vec[2], &uv[2], &norm[2])
+				// Get the digits from the file.
+				matches, _ := fmt.Fscanf(objFile, "%f/%f/%f %f/%f/%f %f/%f/%f\n", &vec[0], &uv[0], &norm[0], &vec[1], &uv[1], &norm[1], &vec[2], &uv[2], &norm[2])
 
-			if matches != 9 {
-				panic("Cannot read your file")
-			}
+				if matches != 9 {
+					panic("Cannot read your file")
+				}
 
-			model.VecIndices = append(model.VecIndices, vec[0])
-			model.VecIndices = append(model.VecIndices, vec[1])
-			model.VecIndices = append(model.VecIndices, vec[2])
+				model.VecIndices = append(model.VecIndices, vec[0])
+				model.VecIndices = append(model.VecIndices, vec[1])
+				model.VecIndices = append(model.VecIndices, vec[2])*/
 
 		}
 		if string(lineType[0]) == "M" {
@@ -106,7 +113,20 @@ func NewModel(file string) Model {
 					break
 				}
 				if line == "f" {
+					norm := make([]float32, 3)
+					vec := make([]float32, 3)
+					uv := make([]float32, 3)
 
+					// Get the digits from the file.
+					matches, _ := fmt.Fscanf(objFile, "%f/%f/%f %f/%f/%f %f/%f/%f\n", &vec[0], &uv[0], &norm[0], &vec[1], &uv[1], &norm[1], &vec[2], &uv[2], &norm[2])
+
+					if matches != 9 {
+						panic("Cannot read your file")
+					}
+
+					model.VecIndices = append(model.VecIndices, vec[0])
+					model.VecIndices = append(model.VecIndices, vec[1])
+					model.VecIndices = append(model.VecIndices, vec[2])
 					model.Materials = append(model.Materials, readMTL(file, material))
 				}
 			}
