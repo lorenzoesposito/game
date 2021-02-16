@@ -47,7 +47,7 @@ func read() {
 
 func GameLoop() {
 	QuitGame = false
-	client.InitializeClient("192.168.178.48:8080")
+	client.InitializeClient("localhost:8080")
 	player = Entity{client.Id, IdentityMatrix(), Color("car"), Mesh("car")}
 
 	// Clock zero

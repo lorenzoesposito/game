@@ -50,7 +50,7 @@ func handleMessage(listener *net.UDPConn) {
 }
 
 func main() {
-	s, err := net.ResolveUDPAddr("udp", "192.168.178.48:8080")
+	s, err := net.ResolveUDPAddr("udp", "localhost:8080")
 	LogFatal(err)
 	listener, err := net.ListenUDP("udp", s)
 	LogFatal(err)
