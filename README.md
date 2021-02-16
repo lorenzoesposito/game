@@ -1,3 +1,1 @@
-# game
-
-No.
+# 3d game written in go
