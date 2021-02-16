@@ -2,7 +2,8 @@ package engine
 
 import (
 	"fmt"
-	. "gfx2"
+
+	. "game.com/lorenzo/game/gfx2"
 
 	. "game.com/lorenzo/game/utils"
 )

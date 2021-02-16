@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	. "gfx2"
 	"time"
+
+	. "game.com/lorenzo/game/gfx2"
 
 	. "game.com/lorenzo/game/client"
 	. "game.com/lorenzo/game/engine"
