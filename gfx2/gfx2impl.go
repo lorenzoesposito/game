@@ -25,6 +25,7 @@ var kommunikationsschloss = make(chan int, 1)
 var mausschloss = make(chan int, 1)
 var tastaturschloss = make(chan int, 1)
 var serverprozess *os.Process
+var Quit bool
 
 //intern
 func start(args ...string) (p *os.Process, err error) {
@@ -79,7 +80,7 @@ func gfxServerAnfrage(anfrage string) string {
 	n, err = kanal.Read(l)
 	if n < 4 || err != nil {
 		if err.Error() == "EOF" || err.Error()[0:4] == "read" { // Die Gegenseite existiert nicht mehr!
-			panic("Das Grafikfenster wurde geschlossen! Programmabbruch!!")
+			fmt.Println("Das Grafikfenster wurde geschlossen! Programmabbruch!!")
 		} else {
 			panic("Fehler beim Empfangen des Nachrichtenbeginns")
 		}

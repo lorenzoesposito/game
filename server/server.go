@@ -38,8 +38,6 @@ func handleMessage(listener *net.UDPConn) {
 		players[conn.String()] = player{conn, Vec3f{p.X + GetAxis(ParseServer(message).Input[0], ParseServer(message).Input[1]),
 			p.Y + GetAxis(ParseServer(message).Input[2], ParseServer(message).Input[3]),
 			p.Z + GetAxis(ParseServer(message).Input[4], ParseServer(message).Input[5])}}
-	case "quit":
-		delete(players, conn.String())
 	}
 
 	for _, player := range players {

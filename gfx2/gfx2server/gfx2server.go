@@ -1019,7 +1019,7 @@ func FensterAus () {
 }
 
 func Grafikzeilen () uint16 {
-	if !FensterOffen() { panic ("Das gfx-Fenster ist nicht offen!") }
+	if !FensterOffen() {panic ("Das gfx-Fenster ist nicht offen!")}
 	return fensterhoehe
 }
 

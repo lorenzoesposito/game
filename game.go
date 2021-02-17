@@ -4,10 +4,9 @@ import (
 	"fmt"
 	"time"
 
-	. "game.com/lorenzo/game/gfx2"
-
 	. "game.com/lorenzo/game/client"
 	. "game.com/lorenzo/game/engine"
+	. "game.com/lorenzo/game/gfx2"
 	. "game.com/lorenzo/game/utils"
 )
 
@@ -83,6 +82,7 @@ func GameLoop() {
 		Stiftfarbe(0, 0, 0)
 		Cls()
 		for i := 0; i < len(GetEntities()); i++ {
+
 			// Draw Mesh
 			for k := 0; k < len(GetEntities()[i].Mesh); k++ {
 				Stiftfarbe(VecToColor(GetEntities()[i].Colors[k]))
