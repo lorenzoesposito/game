@@ -16,6 +16,7 @@ type Entity struct {
 }
 
 // Global Variables
+var fonts = Dir+"\\gfx2\\fonts\\"
 var SX, SY uint16
 var CanvasWidth, CanvasHeight float64 = 2, 2
 var MainCamera [4][4]float64 = [4][4]float64{
@@ -51,7 +52,7 @@ func MainMenu() {
 		} else {
 			Stiftfarbe(0, 0, 0)
 		}
-		SetzeFont("Minecraft.ttf", 30)
+		SetzeFont(fonts+"Minecraft.ttf", 30)
 		SchreibeFont(SX/2-30, SY/2-100, "Play")
 
 		if selected == 1 {
@@ -59,7 +60,7 @@ func MainMenu() {
 		} else {
 			Stiftfarbe(0, 0, 0)
 		}
-		SetzeFont("Minecraft.ttf", 30)
+		SetzeFont(fonts+"Minecraft.ttf", 30)
 		SchreibeFont(SX/2-56, SY/2-60, "Settings")
 
 		UpdateAn()
@@ -107,7 +108,7 @@ func SettingsMenu() {
 
 		Stiftfarbe(255, 0, 0)
 
-		SetzeFont("Minecraft.ttf", 30)
+		SetzeFont(fonts+"Minecraft.ttf", 30)
 		SchreibeFont(SX/2-30, SY/2-100, "Settings")
 
 		UpdateAn()
