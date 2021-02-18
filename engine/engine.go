@@ -141,6 +141,9 @@ func GetEntities() []Entity {
 	return entityList
 }
 
+func DeleteEntities(){
+	entityList = []Entity{}
+}
 // Global Functions
 
 func ResizeWindow(sizeX, sizeY uint16) {

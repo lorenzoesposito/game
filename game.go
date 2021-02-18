@@ -64,6 +64,7 @@ func GameLoop() {
 
 	// Game loop
 	for !QuitGame {
+		fmt.Println(Quit)
 		client.Conn.Write(append([]byte("update_"), BoolsToBytes([]bool{Left, Right, Shift, Space, Down, Up})...))
 		// Calculate deltaTime
 		deltaTime = float64(time.Now().Sub(t1).Nanoseconds()) / 10000000

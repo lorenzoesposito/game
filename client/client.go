@@ -2,7 +2,7 @@ package client
 
 import (
 	"net"
-
+	"fmt"
 	. "game.com/lorenzo/game/utils"
 )
 
@@ -20,6 +20,7 @@ func (c *Client) InitializeClient(server string) {
 	c.Conn = connection
 
 	connection.Write([]byte("joined_"))
+	fmt.Println("this is the server, port:", connection.LocalAddr().String())
 }
 
 func (c *Client) Read() string {

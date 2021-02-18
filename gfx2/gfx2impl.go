@@ -80,6 +80,8 @@ func gfxServerAnfrage(anfrage string) string {
 	n, err = kanal.Read(l)
 	if n < 4 || err != nil {
 		if err.Error() == "EOF" || err.Error()[0:4] == "read" { // Die Gegenseite existiert nicht mehr!
+			Quit = true
+			time.Sleep(time.Second)
 			fmt.Println("Das Grafikfenster wurde geschlossen! Programmabbruch!!")
 		} else {
 			panic("Fehler beim Empfangen des Nachrichtenbeginns")
@@ -92,6 +94,8 @@ func gfxServerAnfrage(anfrage string) string {
 	for angekommen < erwartet {
 		n, err = kanal.Read(b)
 		if err != nil {
+			Quit = true
+			time.Sleep(time.Second)
 			panic("Fehler beim Empfangen der Nachricht!")
 		}
 		copy(nachricht[angekommen:], b[0:n])
