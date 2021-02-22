@@ -52,27 +52,19 @@ func read() {
 	}
 }
 
-func checkConnection() {
-	if updates == 0 {
-		fmt.Println("no connection")
-		client.InitializeClient(server)
-	}
-	updates = 0
-}
-
 func GameLoop() {
 	QuitGame = false
 	client.InitializeClient(server)
 	player = Entity{client.Id, IdentityMatrix(), Color("car"), Mesh("car")}
 
 	// Clock zero
+
 	t0 := time.Now()
 	t0 = t0
 	t1 := time.Now()
 	// Seconds elapsed since last frame
 	deltaTime := float64(0)
 
-	go CallEvery(2, checkConnection)
 	go KeyboardInput()
 	go read()
 	//Camera Rotation values

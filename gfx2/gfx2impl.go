@@ -11,7 +11,7 @@ import (
 
 var Dir, _ = os.Getwd()
 
-var serververzeichnis string = Dir + "\\gfx2\\gfx2server\\"
+var serververzeichnis string = Dir + "/gfx2/gfx2server/"
 
 // const serververzeichnis string = "/home/lewein/go/bin/"
 
