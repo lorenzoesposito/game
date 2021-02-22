@@ -16,7 +16,7 @@ type Entity struct {
 }
 
 // Global Variables
-var fonts = Dir+"\\gfx2\\fonts\\"
+var fonts = Dir + "\\gfx2\\fonts\\"
 var SX, SY uint16
 var CanvasWidth, CanvasHeight float64 = 2, 2
 var MainCamera [4][4]float64 = [4][4]float64{
@@ -24,6 +24,7 @@ var MainCamera [4][4]float64 = [4][4]float64{
 	[4]float64{0, 1, 0, 0},
 	[4]float64{0, 0, 1, 0},
 	[4]float64{0, 0, 0, 1}}
+var destroy bool
 
 var ProgramState int = 0
 
@@ -141,9 +142,10 @@ func GetEntities() []Entity {
 	return entityList
 }
 
-func DeleteEntities(){
+func DeleteEntities() {
 	entityList = []Entity{}
 }
+
 // Global Functions
 
 func ResizeWindow(sizeX, sizeY uint16) {

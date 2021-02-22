@@ -1,8 +1,9 @@
 package client
 
 import (
-	"net"
 	"fmt"
+	"net"
+
 	. "game.com/lorenzo/game/utils"
 )
 
@@ -12,6 +13,7 @@ type Client struct {
 }
 
 func (c *Client) InitializeClient(server string) {
+	fmt.Println("connecting...")
 	addr, err := net.ResolveUDPAddr("udp", server)
 	LogFatal(err)
 	connection, err := net.DialUDP("udp", nil, addr)
@@ -20,7 +22,6 @@ func (c *Client) InitializeClient(server string) {
 	c.Conn = connection
 
 	connection.Write([]byte("joined_"))
-	fmt.Println("this is the server, port:", connection.LocalAddr().String())
 }
 
 func (c *Client) Read() string {

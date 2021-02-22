@@ -4,6 +4,7 @@ import (
 	"log"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type Msg struct {
@@ -65,5 +66,11 @@ func ParseClient(msg string) (string, Vec3f) {
 func LogFatal(err error) {
 	if err != nil {
 		log.Fatal(err)
+	}
+}
+
+func CallEvery(d time.Duration, f func()) {
+	for range time.Tick(d) {
+		f()
 	}
 }
