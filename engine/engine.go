@@ -2,21 +2,25 @@ package engine
 
 import (
 	"fmt"
+	"io/ioutil"
+	"strconv"
+	"unicode"
 
-	. "game.com/lorenzo/game/gfx2"
+	. "game.com/lorenzo/game/gfx"
 
 	. "game.com/lorenzo/game/utils"
 )
 
 type Entity struct {
-	Id        string // Index in the entity list
-	Transform [4][4]float64
-	Colors    []Vec3f // Color of this entity
-	Mesh      []Tri3f // Triangles of this entity
+	Id        string        // Index in the entity list
+	Transform [4][4]float64 //position
+	Colors    []Vec3f       // Color of this entity
+	Mesh      []Tri3f       // Triangles of this entity
+	Object    string        //name of obj
 }
 
 // Global Variables
-var fonts = Dir + "\\gfx2\\fonts\\"
+var fonts = Dir + "//fonts//"
 var SX, SY uint16
 var CanvasWidth, CanvasHeight float64 = 2, 2
 var MainCamera [4][4]float64 = [4][4]float64{
@@ -131,10 +135,13 @@ func SettingsMenu() {
 	}
 }
 
-func (mat *Entity) SetPosition(vec Vec3f) [4][4]float64 {
+func (mat *Entity) Update(vec Vec3f, obj string) [4][4]float64 {
 	mat.Transform[3][0] = vec.X
 	mat.Transform[3][1] = vec.Y
 	mat.Transform[3][2] = vec.Z
+
+	mat.Object = obj
+
 	return mat.Transform
 }
 
@@ -207,4 +214,47 @@ func NdcToRaster(ndc Vec2f) (raster Vec2ui) {
 
 func DrawTriangle(tRaster Tri2ui) {
 	Volldreieck(tRaster.A.X, tRaster.A.Y, tRaster.B.X, tRaster.B.Y, tRaster.C.X, tRaster.C.Y)
+}
+
+func (e *Entity) Animate() {
+	a, b, _ := getAnimation(e.Object)
+	c := e.Object[len(e.Object)-6:]
+	e.Mesh = Objects[a][b][a+b+"_"+c]
+}
+
+func getAnimation(obj string) (string, string, int) {
+	str := []rune(obj)
+	n := 0
+	for i := range str {
+		if unicode.IsUpper(str[i]) {
+			n = i
+		}
+	}
+	num, _ := strconv.Atoi(obj[len(obj)-7:])
+
+	return obj[:n], obj[n : len(obj)-7], num
+}
+
+var Objects = make(map[string]map[string]map[string][]Tri3f)
+
+func ParseObjs() {
+	models, _ := ioutil.ReadDir(Dir + "/models")
+	for _, model := range models {
+		if model.IsDir() {
+			Objects[model.Name()] = make(map[string]map[string][]Tri3f)
+			animations, _ := ioutil.ReadDir(Dir + "/models/" + model.Name())
+			for _, animation := range animations {
+				Objects[model.Name()][animation.Name()] = make(map[string][]Tri3f)
+				objs, _ := ioutil.ReadDir(Dir + "/models/" + model.Name() + "/" + animation.Name())
+				for _, obj := range objs {
+					if obj.Name()[len(obj.Name())-4:] == ".obj" {
+						Objects[model.Name()][animation.Name()][obj.Name()[:len(obj.Name())-4]] = Mesh(Dir + "/models/" +
+							model.Name() + "/" + animation.Name() + "/" + obj.Name()[:len(obj.Name())-4])
+					}
+				}
+			}
+		} else {
+			fmt.Println("oh no", model.Name())
+		}
+	}
 }

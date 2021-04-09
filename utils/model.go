@@ -18,7 +18,6 @@ func Mesh(file string) []Tri3f {
 	var m = NewModel(file)
 	var mesh []Tri3f
 	for i := 0; i < len(m.VecIndices); i += 3 {
-		//fmt.Println(int(m.VecIndices[i]), int(m.VecIndices[i+1]), int(m.VecIndices[i+2]))
 		var face Tri3f
 		face = Tri3f{
 			m.Vecs[int(m.VecIndices[i])-1],
@@ -35,7 +34,7 @@ func Color(file string) []Vec3f {
 }
 
 func readMTL(file, material string) Vec3f {
-	fila, err := ioutil.ReadFile(fmt.Sprintf("models/%s.mtl", file))
+	fila, err := ioutil.ReadFile(fmt.Sprintf("%s.mtl", file))
 	//mtlFile, err := os.Open(fmt.Sprintf("%s.mtl", file))
 	if err != nil {
 		panic(err)
@@ -54,7 +53,7 @@ func readMTL(file, material string) Vec3f {
 
 func NewModel(file string) Model {
 	// Open the file for reading and check for errors.
-	objFile, err := os.Open(fmt.Sprintf("models/%s.obj", file))
+	objFile, err := os.Open(fmt.Sprintf("%s.obj", file))
 	if err != nil {
 		panic(err)
 	}

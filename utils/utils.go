@@ -2,13 +2,17 @@ package utils
 
 import (
 	"log"
+	"os"
 	"strconv"
 	"strings"
 	"time"
 )
 
+var Dir, _ = os.Getwd()
+
 type Msg struct {
 	MsgType string
+	Object  string
 	Input   []bool
 }
 
@@ -55,12 +59,12 @@ func BytesToBools(b []byte) []bool {
 func ParseServer(msg string) Msg {
 	split := strings.Split(msg, "_")
 	msgType := split[0]
-	return Msg{msgType, BytesToBools([]byte(split[1]))}
+	return Msg{msgType, split[1] + "_" + split[2], BytesToBools([]byte(split[3]))}
 }
 
-func ParseClient(msg string) (string, Vec3f) {
+func ParseClient(msg string) (string, Vec3f, string) {
 	split := strings.Split(msg, "_")
-	return split[0], Vec3f{StringToFloat(split[1]), StringToFloat(split[2]), StringToFloat(split[3])}
+	return split[0], Vec3f{StringToFloat(split[1]), StringToFloat(split[2]), StringToFloat(split[3])}, split[4] + "_" + split[5]
 }
 
 func LogFatal(err error) {

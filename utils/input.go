@@ -1,7 +1,7 @@
 package utils
 
 import (
-	. "game.com/lorenzo/game/gfx2"
+	. "game.com/lorenzo/game/gfx"
 )
 
 var MousePos Vec2ui = Vec2ui{400, 400}       // Mouse cursor position

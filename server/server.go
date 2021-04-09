@@ -2,8 +2,11 @@ package main
 
 import (
 	"fmt"
+	"math"
 	"net"
+	"strconv"
 	"time"
+	"unicode"
 
 	. "game.com/lorenzo/game/utils"
 )
@@ -21,8 +24,8 @@ type player struct {
 	connected int
 }
 
-func playerToBytes(pl player) []byte {
-	return []byte(fmt.Sprintf("%s_%f_%f_%f_%f_%f_%f", pl.conn, pl.position.X, pl.position.Y, pl.position.Z))
+func playerToBytes(pl player, animation string) []byte {
+	return []byte(fmt.Sprintf("%s_%f_%f_%f_", pl.conn, pl.position.X, pl.position.Y, pl.position.Z) + animation)
 }
 func quit(pl player) []byte {
 	return []byte(fmt.Sprintf("quit%s_%f_%f_%f_%f_%f_%f", pl.conn, pl.position.X, pl.position.Y, pl.position.Z))
@@ -41,7 +44,6 @@ func handleMessage(listener *net.UDPConn) {
 	switch ParseServer(message).MsgType {
 	case "joined":
 		players[conn.String()] = player{conn, start, 1}
-		//fmt.Println(conn.String())
 	case "update":
 		p := players[conn.String()].position
 		players[conn.String()] = player{conn, Vec3f{p.X + GetAxis(ParseServer(message).Input[0], ParseServer(message).Input[1]),
@@ -49,8 +51,49 @@ func handleMessage(listener *net.UDPConn) {
 			p.Z + GetAxis(ParseServer(message).Input[4], ParseServer(message).Input[5])}, players[conn.String()].connected + 1}
 	}
 	for _, player := range players {
-		listener.WriteToUDP(playerToBytes(players[conn.String()]), player.conn)
+		listener.WriteToUDP(playerToBytes(players[conn.String()], animation(message)), player.conn)
+		fmt.Println("message", string(playerToBytes(players[conn.String()], animation(message))))
 	}
+}
+
+func animation(msg string) string {
+	fmt.Println("AAAAAAAA", ParseServer(msg).Object)
+	a, b, c := getAnimation(ParseServer(msg).Object)
+	fmt.Println(a, b, c)
+	var newAnimation string
+	switch b {
+	case "Idle":
+		if GetAxis(ParseServer(msg).Input[4], ParseServer(msg).Input[5]) != 0 {
+			newAnimation = a + "Run_000001"
+		} else {
+			newAnimation = a + b + fmt.Sprintf("_%06d", (c+1)%32+1)
+			fmt.Println("anim:", newAnimation)
+		}
+	case "Run":
+		if GetAxis(ParseServer(msg).Input[4], ParseServer(msg).Input[5]) != 0 {
+			newAnimation = a + b + fmt.Sprintf("_%06d", (c+1)%16+1)
+		} else {
+			newAnimation = a + "Idle_000001"
+		}
+	}
+
+	return newAnimation
+}
+
+func f(x float64, n float64) int {
+	return int((math.Acos(math.Cos((1/n)*math.Pi*x)) * (n / math.Pi)) + 0.5)
+}
+
+func getAnimation(obj string) (string, string, int) {
+	str := []rune(obj)
+	n := 0
+	for i := range str {
+		if unicode.IsUpper(str[i]) {
+			n = i
+		}
+	}
+	num, _ := strconv.Atoi(obj[len(obj)-6:])
+	return obj[:n], obj[n : len(obj)-7], num
 }
 
 func setZero() {
